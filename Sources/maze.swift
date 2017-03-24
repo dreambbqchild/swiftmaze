@@ -46,22 +46,18 @@ class Maze {
 		let path = Path(withVertex: currentVertex)
 		var result = (vertex: currentVertex, distance: distance, path: path)
 		let edges = [currentVertex.left, currentVertex.top, currentVertex.right, currentVertex.bottom]
+			.flatMap{$0}
+			.filter{$0.type == EdgeType.hall}
 		
-		for potentialEdge in edges {
-			if let edge = potentialEdge {
-				if edge.type != EdgeType.hall {
-					continue
-				}
-				
-				let nextVertex = (edge.a === currentVertex ? edge.b : edge.a)
-				if nextVertex !== lastVertex  {
-					let info = findFurthestVertex(currentVertex: nextVertex!, lastVertex: currentVertex, distance: distance + 1)
-					if info.distance > result.distance {					
-						result = info
-						path.next = result.path
-						path.edge = edge
-						result.path = path
-					}
+		for edge in edges {						
+			let nextVertex: Vertex! = (edge.a === currentVertex ? edge.b : edge.a)
+			if nextVertex !== lastVertex  {
+				let info = findFurthestVertex(currentVertex: nextVertex, lastVertex: currentVertex, distance: distance + 1)
+				if info.distance > result.distance {					
+					result = info
+					path.next = result.path
+					path.edge = edge
+					result.path = path
 				}
 			}
 		}		
